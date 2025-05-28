@@ -1,23 +1,28 @@
-# S02.01.MySQL_Queries
+# S02.01.MySQL\_Queries
 
-## 👤 Alumno
-Desarrollado por Ibai Ramirez
+## 👤 Student
 
-## 📄 Descripción
-Ejercicios de los 3 niveles del tema 1 del Sprint 2: https://itacademy.barcelonactiva.cat/mod/assign/view.php?id=4658
+Developed by Ibai Ramirez
 
-## 🎯 Palabras Clave
-- MySQL
-- SQL
-- Select
-- Bases de datos
-- campo clave, clave externa
+## 📄 Description
 
-## 🛠️ Tecnologías utilizadas
-- MySQL Ver 8.0.42
-- MySQL Workbench  Ver 8.0.42
-- IDE: Visual Studio Code
-- Git & GitHub
+Exercises from all 3 levels of topic 1 of Sprint 2: [https://itacademy.barcelonactiva.cat/mod/assign/view.php?id=4658](https://itacademy.barcelonactiva.cat/mod/assign/view.php?id=4658)
 
-## 📋 Requisitos
-- Tener las bases de datos "universidad" y "tienda"
+## 🎯 Keywords
+
+* MySQL
+* SQL
+* Select
+* Databases
+* key field, foreign key
+
+## 🛠️ Technologies Used
+
+* MySQL Ver 8.0.42
+* MySQL Workbench Ver 8.0.42
+* IDE: Visual Studio Code
+* Git & GitHub
+
+## 📋 Requirements
+
+* Have the databases "universidad" and "tienda"
