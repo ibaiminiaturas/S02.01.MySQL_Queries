@@ -15,7 +15,7 @@ FROM producto
 
 3.- Llista totes les columnes de la taula "producto".
 
-SELECT *
+SHOW COLUMNS
 FROM producto
 
 4.- Llista el nom dels "productos", el preu en euros i el preu en dòlars nord-americans (USD).
@@ -73,16 +73,16 @@ FROM producto
 11.- Llista el codi dels fabricants que tenen productes en la taula "producto".
 
 SELECT 
-       DISTINCT producto.codigo_fabricante
+       producto.codigo_fabricante
 FROM producto 
-LEFT JOIN fabricante ON fabricante.codigo = producto.codigo
+
 
 12.- Llista el codi dels fabricants que tenen productes en la taula "producto", eliminant els codis que apareixen repetits.
 
-SELECT 
+SELECT DISTINCT
        producto.codigo_fabricante
 FROM producto 
-LEFT JOIN fabricante ON fabricante.codigo = producto.codigo
+
 
 13.- Llista els noms dels fabricants ordenats de manera ascendent.
 
@@ -141,7 +141,7 @@ LIMIT 1
 SELECT 
        nombre
 FROM producto
-WHERE codigo_fabricante = '2'
+WHERE codigo_fabricante = 2
 
 21.- Retorna una llista amb el nom del producte, preu i nom de fabricant de tots els productes de la base de dades.
 
@@ -305,33 +305,29 @@ WHERE producto.codigo IS NULL
 SELECT 
        producto.codigo AS "ID Producto", 
        producto.nombre 
-FROM producto, 
-     fabricante
+FROM producto   
 WHERE 
-      fabricante.nombre = 'Lenovo' AND
-	  producto.codigo_fabricante = fabricante.codigo
+      producto.codigo_fabricante = ( 
+		SELECT codigo 
+		FROM fabricante 
+		WHERE nombre = "Lenovo" );
 
 37.- Retorna totes les dades dels productes que tenen el mateix preu que el producte més car del fabricant Lenovo. (Sense fer servir INNER JOIN).
 
 SELECT 
        producto.codigo AS "ID Producto", 
        producto.nombre 
-FROM producto, 
-     fabricante
+FROM producto
 WHERE 
-	  producto.codigo_fabricante = fabricante.codigo AND
-      producto.precio = ( SELECT 
-								 precio
-						  FROM 
-								 producto,
-                                 fabricante
-						  WHERE  
-								 producto.codigo_fabricante = fabricante.codigo AND
-                                 fabricante.nombre = 'Lenovo'
-						  ORDER BY 
-								 precio DESC
-						  LIMIT 1) AND
-	   fabricante.nombre != 'Lenovo'
+precio = ( SELECT 
+				MAX(precio)
+			FROM 
+				producto
+			WHERE  
+				codigo_fabricante = (
+					SELECT codigo
+					FROM fabricante 
+					WHERE nombre = "Lenovo" )) 
 
 
 38.- Llista el nom del producte més car del fabricant Lenovo.
@@ -406,6 +402,7 @@ SELECT
 	   apellido1, 
 	   nombre 
 FROM persona 
+WHERE tipo = "Alumno"
 ORDER BY apellido2, apellido1, nombre;
 
 2.- Esbrina el nom i els dos cognoms dels/les alumnes que no han donat d'alta el seu número de telèfon en la base de dades
@@ -415,13 +412,15 @@ SELECT
 	   apellido1, 
 	   apellido2 
 FROM persona 
-WHERE telefono IS NULL;
+WHERE tipo = "Alumno" AND
+      telefono IS NULL;
 
 3.- Retorna el llistat dels/les alumnes que van néixer en 1999.
 
 SELECT * 
 FROM persona 
-WHERE YEAR(fecha_nacimiento) = '1999';
+WHERE tipo = "Alumno" AND 
+YEAR(fecha_nacimiento) = '1999';
 
 4.- Retorna el llistat de professors/es que no han donat d'alta el seu número de telèfon en la base de dades i a més el seu NIF acaba en K.
 
@@ -507,16 +506,20 @@ SELECT departamento.nombre, apellido1, apellido2, persona.nombre
 FROM persona
 LEFT JOIN profesor ON profesor.id_profesor = persona.id
 LEFT JOIN departamento on departamento.id = profesor.id_departamento 
+WHERE tipo = "Profesor"
 ORDER BY  departamento.nombre, apellido1, apellido2, persona.nombre
 
 2.- Retorna un llistat amb els professors/es que no estan associats a un departament.
 
 SELECT 
-		persona.id
+		persona.id,
+		persona.nombre,
+		persona.apellido1,
+		persona.apellido2
 FROM persona
 LEFT JOIN profesor ON persona.id = profesor.id_profesor
 LEFT JOIN departamento ON departamento.id = profesor.id_departamento
-WHERE tipo = 'profesor' AND
+WHERE tipo = "Profesor" AND
 	  departamento.id IS NULL
 
 3.- Retorna un llistat amb els departaments que no tenen professors/es associats.
@@ -533,6 +536,7 @@ FROM profesor
 JOIN persona on persona.id = profesor.id_profesor
 LEFT JOIN asignatura on profesor.id_profesor = asignatura.id_profesor
 WHERE asignatura.id_profesor IS NULL
+ 		OR profesor.id_departamento IS NULL;
 
 5.- Retorna un llistat amb les assignatures que no tenen un professor/a assignat.
 
@@ -613,7 +617,7 @@ GROUP BY grado.nombre, asignatura.tipo
 8.- Retorna un llistat que mostri quants/es alumnes s'han matriculat d'alguna assignatura en cadascun dels cursos escolars. 
 El resultat haurà de mostrar dues columnes, una columna amb l'any d'inici del curs escolar i una altra amb el nombre d'alumnes matriculats/des.
 
-SELECT curso_escolar.anyo_inicio as "Año de inicio de curso", COUNT(id_alumno) as "Alumnos matriculados"
+SELECT curso_escolar.anyo_inicio as "Año de inicio de curso", COUNT(DISTINCT id_alumno) as "Alumnos matriculados"
 FROM alumno_se_matricula_asignatura
 JOIN curso_escolar on curso_escolar.id = alumno_se_matricula_asignatura.id_curso_escolar
 GROUP BY alumno_se_matricula_asignatura.id_curso_escolar
